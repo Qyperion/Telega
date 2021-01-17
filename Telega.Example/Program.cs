@@ -336,17 +336,23 @@ namespace Telega.Example
             // it is disabled by default
             Internal.TgTrace.IsEnabled = false;
 
-            var cfg = await ReadConfig();
-            using (var tg = await TelegramClient.Connect(cfg.ApiId))
+            var cfg = new Config
             {
-                await EnsureAuthorized(tg, cfg);
+                ApiId = 666939,
+                ApiHash = "faef88fa03a13a655bb1a825bda79372",
+                Phone = ""
+            };
 
-                // await PrintUserInfo(tg);
-                // await DownloadFirstChannelPictureExample(tg);
-                // await PrintFirstChannelTop100MessagesExample(tg);
-                await SendOnePavelDurovPictureToMeExample(tg);
-                await ListenUpdates(tg);
-            }
+            using TelegramClient? tg = await TelegramClient.Connect(cfg.ApiId);
+
+            await EnsureAuthorized(tg, cfg);
+
+            await PrintUserInfo(tg);
+            await SendOnePavelDurovPictureToMeExample(tg);
+
+            // await DownloadFirstChannelPictureExample(tg);
+            // await PrintFirstChannelTop100MessagesExample(tg);
+            //await ListenUpdates(tg);
         }
     }
 }
