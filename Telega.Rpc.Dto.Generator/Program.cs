@@ -31,7 +31,7 @@ namespace Telega.Rpc.Dto.Generator
 
             // Remove needless core types section
             if (startSchemeIndex != -1)
-                telegramScheme = telegramScheme.Substring(startSchemeIndex);
+                telegramScheme = telegramScheme[startSchemeIndex..];
 
             return telegramScheme;
         }

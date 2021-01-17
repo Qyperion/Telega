@@ -93,6 +93,7 @@ namespace Telega
                 background: false,
                 clearDraft: false,
                 media: new InputMedia.UploadedDocumentTag(
+                    forceFile: false,
                     nosoundVideo: false,
                     file: file,
                     mimeType: mimeType,
@@ -110,10 +111,11 @@ namespace Telega
                 scheduleDate: None
             ));
 
-        public async Task<bool> SendTyping(Some<InputPeer> peer) =>
+        public async Task<bool> SendTyping(Some<InputPeer> peer, Option<int> topMsgId) =>
             await _tg.Call(new SetTyping(
                 action: new SendMessageAction.TypingTag(),
-                peer: peer
+                peer: peer,
+                topMsgId: topMsgId
             ));
     }
 }

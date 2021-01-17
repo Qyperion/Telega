@@ -331,6 +331,17 @@ namespace Telega.Example
             }
         }
 
+        static async Task UnpinAllMessages(TelegramClient tg)
+        {
+            const string groupName = "Test";
+
+            var dialogs = await tg.Messages.GetDialogs();
+            var chat = dialogs.AsSliceTag().AssertSome().Chats.Choose(Chat.AsTag).Single(x => x.Title == groupName);
+            var chatPeer = new InputPeer.ChatTag(chatId: chat.Id);
+
+            await tg.Call(new UnpinAllMessages(chatPeer));
+        }
+
         static async Task Main()
         {
             // it is disabled by default
@@ -340,7 +351,7 @@ namespace Telega.Example
             {
                 ApiId = 666939,
                 ApiHash = "faef88fa03a13a655bb1a825bda79372",
-                Phone = ""
+                Phone = "+380954308115"
             };
 
             using TelegramClient? tg = await TelegramClient.Connect(cfg.ApiId);
@@ -352,7 +363,8 @@ namespace Telega.Example
 
             // await DownloadFirstChannelPictureExample(tg);
             // await PrintFirstChannelTop100MessagesExample(tg);
-            //await ListenUpdates(tg);
+            // await ListenUpdates(tg);
+            // await UnpinAllMessages(tg);
         }
     }
 }
