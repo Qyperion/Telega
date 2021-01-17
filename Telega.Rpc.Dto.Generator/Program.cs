@@ -11,18 +11,35 @@ namespace Telega.Rpc.Dto.Generator
 {
     static class Program
     {
-        // https://github.com/telegramdesktop/tdesktop/commits/dev/Telegram/Resources/scheme.tl
+        // 17.01.2020 Updated to Layer 122
+        // https://github.com/telegramdesktop/tdesktop/commits/master/Telegram/Resources/tl
 
-        // layer 114
-        const string SchemeUrl =
-            "https://gist.githubusercontent.com/ilyalatt/beea58f53f2c5d2760c0ebe0f0b6c2b9/raw/2a6f797f197d54de1afd182a0e111843209f513d/telegram.tl";
-        //const string SchemeUrl = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/4544a2e331597eae48fad93b0fbb583ecc91f7c4/Telegram/Resources/scheme.tl";
-        static string DownloadLatestTgScheme() =>
-            new WebClient().DownloadString(SchemeUrl);
+        private const string MtProtoSchemeUrl = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/master/Telegram/Resources/tl/mtproto.tl";
+        private const string ApiSchemeUrl = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/master/Telegram/Resources/tl/api.tl";
 
-        static async Task Main()
+        static string DownloadLatestTelegramScheme()
         {
-            var rawScheme = DownloadLatestTgScheme();
+            using var webClient = new WebClient();
+            
+            string mtprotoScheme = webClient.DownloadString(MtProtoSchemeUrl);
+            string apiScheme = webClient.DownloadString(ApiSchemeUrl);
+
+            string telegramScheme = mtprotoScheme + Environment.NewLine + "---types---" + Environment.NewLine + apiScheme;
+
+            int startSchemeIndex = telegramScheme.IndexOf("///////////////////////////////\n/// Authorization key creation", 
+                StringComparison.InvariantCulture);
+
+            // Remove needless core types section
+            if (startSchemeIndex != -1)
+                telegramScheme = telegramScheme.Substring(startSchemeIndex);
+
+            return telegramScheme;
+        }
+
+    static async Task Main()
+        {
+            string rawScheme = DownloadLatestTelegramScheme();
+
             var scheme = TgSchemeParser.Parse(rawScheme)
                 .Apply(SomeExt.ToSome).Apply(TgSchemePatcher.Patch)
                 .Apply(SomeExt.ToSome).Apply(TgSchemeNormalizer.Normalize);
